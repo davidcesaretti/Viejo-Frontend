@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* Dark mode: clase .dark en <html> (controlada por ThemeProvider) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: system-ui, ui-sans-serif, sans-serif;
+
+  /* Tema claro — tokens semánticos */
+  --color-bg: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f5f9;
+  --color-surface-muted: #f8fafc;
+  --color-text: #1e293b;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-border-focus: #3b82f6;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-foreground: #ffffff;
+  --color-secondary: #475569;
+  --color-secondary-hover: #334155;
+  --color-input-bg: #ffffff;
+  --color-input-border: #cbd5e1;
+  --color-input-placeholder: #94a3b8;
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-ring: #e2e8f0;
+  --color-required: #dc2626;
+}
+
+@theme dark: {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-hover: #334155;
+  --color-surface-muted: #334155;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+  --color-border-focus: #60a5fa;
+  --color-accent: #3b82f6;
+  --color-accent-hover: #60a5fa;
+  --color-accent-foreground: #ffffff;
+  --color-secondary: #64748b;
+  --color-secondary-hover: #94a3b8;
+  --color-input-bg: #1e293b;
+  --color-input-border: #475569;
+  --color-input-placeholder: #64748b;
+  --color-danger: #ef4444;
+  --color-danger-hover: #f87171;
+  --color-ring: #334155;
+  --color-required: #f87171;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
