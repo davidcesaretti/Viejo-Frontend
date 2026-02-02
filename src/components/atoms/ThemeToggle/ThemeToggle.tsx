@@ -61,8 +61,8 @@ export function ThemeToggle({
       aria-label={isDark ? ariaLabelDark : ariaLabelLight}
       className={`
         inline-flex items-center justify-center rounded-lg p-2
-        text-text-muted hover:text-text hover:bg-surface-hover
-        focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 focus:ring-offset-bg
+        text-text-tertiary hover:text-text-primary hover:bg-bg-tertiary
+        focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-primary
         transition-colors
         ${className}
       `}

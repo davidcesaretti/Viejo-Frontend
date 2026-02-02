@@ -3,4 +3,4 @@ export {
   type CardProps,
   type CardVariant,
   type CardPadding,
-} from "@/components/atoms/Card";
+} from "./Card";

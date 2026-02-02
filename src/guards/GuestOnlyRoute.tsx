@@ -19,8 +19,8 @@ export function GuestOnlyRoute({ children }: GuestOnlyRouteProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-bg flex items-center justify-center">
-        <div className="h-8 w-8 border-2 border-border-focus border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+        <div className="h-8 w-8 border-2 border-accent-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }

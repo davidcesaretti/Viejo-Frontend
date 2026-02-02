@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts";
 import { ProtectedRoute, GuestOnlyRoute } from "@/guards";
+import { ToastContainer } from "@/components/molecules/ToastContainer";
 import { HomePage, LoginPage } from "@/pages";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ToastContainer />
         <Routes>
           <Route
             path="/login"

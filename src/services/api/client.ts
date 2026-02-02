@@ -7,7 +7,7 @@
 const getBaseUrl = (): string => {
   const env = import.meta.env.VITE_API_URL;
   if (typeof env === "string" && env.length > 0) return env.replace(/\/$/, "");
-  return "";
+  return "http://localhost:3001";
 };
 
 export const apiBaseUrl = getBaseUrl();

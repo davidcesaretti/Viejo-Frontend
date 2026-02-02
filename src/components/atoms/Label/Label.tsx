@@ -1,4 +1,5 @@
 import { type LabelHTMLAttributes, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
@@ -9,11 +10,18 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
     return (
       <label
         ref={ref}
-        className={`block text-sm font-medium text-text ${className}`}
+        className={cn(
+          "block text-sm font-medium text-text-secondary mb-1.5",
+          className
+        )}
         {...props}
       >
         {children}
-        {required && <span className="text-required ml-0.5">*</span>}
+        {required && (
+          <span className="text-accent-error ml-1" aria-label="requerido">
+            *
+          </span>
+        )}
       </label>
     );
   }

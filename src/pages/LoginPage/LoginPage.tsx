@@ -22,6 +22,7 @@ export function LoginPage() {
   const methods = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: { email: "", password: "" },
+    mode: "onBlur",
   });
 
   const onSubmit = methods.handleSubmit(async (data) => {
@@ -39,14 +40,22 @@ export function LoginPage() {
   });
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center px-4 py-8">
-      <Card className="w-full max-w-md">
-        <h1 className="text-2xl font-bold text-text mb-1">Iniciar sesión</h1>
-        <p className="text-text-muted text-sm mb-6">
-          Gestión de Ventas — ingresá con tu cuenta
-        </p>
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4 py-8">
+      <Card
+        variant="elevated"
+        padding="lg"
+        className="w-full max-w-md animate-scale-in"
+      >
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">
+            Iniciar sesión
+          </h1>
+          <p className="text-text-secondary text-sm">
+            Gestión de Ventas — ingresá con tu cuenta
+          </p>
+        </div>
         <FormProvider {...methods}>
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-5">
             <FormField
               name="email"
               label="Email"
@@ -62,11 +71,28 @@ export function LoginPage() {
               inputType="password"
               placeholder="Mínimo 6 caracteres"
               autoComplete="current-password"
+              showPasswordToggle
             />
             {submitError && (
-              <p className="text-sm text-danger" role="alert">
-                {submitError}
-              </p>
+              <div className="p-3 rounded-lg bg-accent-error/10 border border-accent-error/20">
+                <p
+                  className="text-sm text-accent-error flex items-center gap-2"
+                  role="alert"
+                >
+                  <svg
+                    className="w-5 h-5 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {submitError}
+                </p>
+              </div>
             )}
             <Button type="submit" className="w-full" size="lg">
               Entrar

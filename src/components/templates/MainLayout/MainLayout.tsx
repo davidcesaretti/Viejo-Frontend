@@ -19,10 +19,10 @@ export function MainLayout({ children, title }: MainLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-bg">
-      <header className="sticky top-0 z-10 border-b border-border bg-surface shadow-sm">
+    <div className="min-h-screen bg-bg-primary">
+      <header className="sticky top-0 z-10 border-b border-border-light bg-bg-secondary shadow-md">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <h1 className="text-xl font-bold text-text">
+          <h1 className="text-xl font-bold text-text-primary">
             {title ?? "Gestión de Ventas"}
           </h1>
           <nav className="flex items-center gap-2">
@@ -35,7 +35,7 @@ export function MainLayout({ children, title }: MainLayoutProps) {
             <ThemeToggle />
             {isAuthenticated && user && (
               <>
-                <span className="text-sm text-text-muted hidden sm:inline">
+                <span className="text-sm text-text-secondary hidden sm:inline">
                   {user.name}
                 </span>
                 <Button variant="ghost" size="sm" onClick={handleLogout}>

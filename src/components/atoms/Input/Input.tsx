@@ -1,29 +1,52 @@
 import { type InputHTMLAttributes, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   hasError?: boolean;
+  label?: string;
+  icon?: React.ReactNode;
 }
 
+const baseStyles =
+  "w-full px-4 py-2.5 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-bg-secondary text-text-primary placeholder:text-text-tertiary";
+
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ hasError = false, className = "", ...props }, ref) => {
+  (
+    { hasError = false, label, icon, className = "", id: idProp, ...props },
+    ref
+  ) => {
+    const inputId =
+      idProp ??
+      (label ? `input-${label.toLowerCase().replace(/\s+/g, "-")}` : undefined);
+    const errorStyles = hasError
+      ? "border-accent-error focus:border-accent-error focus:ring-accent-error/20"
+      : "border-border-light focus:border-accent-primary focus:ring-accent-primary/20";
+
     return (
-      <input
-        ref={ref}
-        className={`
-          w-full px-3 py-2 rounded-lg border bg-input-bg text-text
-          placeholder:text-input-placeholder
-          focus:outline-none focus:ring-2 focus:ring-offset-0
-          disabled:opacity-50 disabled:cursor-not-allowed
-          transition-colors
-          ${
-            hasError
-              ? "border-danger focus:ring-danger"
-              : "border-input-border focus:ring-border-focus"
-          }
-          ${className}
-        `}
-        {...props}
-      />
+      <div className="w-full">
+        {label && (
+          <label
+            htmlFor={inputId}
+            className="block text-sm font-medium text-text-secondary mb-1.5"
+          >
+            {label}
+          </label>
+        )}
+        <div className="relative">
+          {icon && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none">
+              {icon}
+            </div>
+          )}
+          <input
+            ref={ref}
+            id={inputId}
+            className={cn(baseStyles, errorStyles, icon && "pl-10", className)}
+            aria-invalid={hasError}
+            {...props}
+          />
+        </div>
+      </div>
     );
   }
 );
