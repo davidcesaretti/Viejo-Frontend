@@ -12,15 +12,16 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variants: Record<CardVariant, string> = {
-  default: "bg-bg-secondary border border-border-light",
-  elevated: "bg-bg-elevated shadow-lg",
-  bordered: "bg-bg-secondary border-2 border-border-medium",
+  default: "bg-bg-secondary border border-border-light rounded-xl",
+  elevated:
+    "bg-bg-elevated rounded-xl shadow-[var(--shadow-lg)] border border-border-light/50 hover:shadow-[var(--shadow-xl)] transition-shadow duration-200",
+  bordered: "bg-bg-secondary border-2 border-border-medium rounded-xl",
 };
 
 const paddings: Record<CardPadding, string> = {
   none: "",
-  sm: "p-3",
-  md: "p-4",
+  sm: "p-4",
+  md: "p-5",
   lg: "p-6",
 };
 
@@ -40,15 +41,19 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          "rounded-lg transition-all duration-200",
+          "transition-all duration-200 overflow-hidden",
           variants[variant],
           className
         )}
         {...props}
       >
         {title && (
-          <div className="px-4 py-3 border-b border-border-light bg-bg-tertiary rounded-t-lg">
-            <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
+          <div className="px-5 py-3.5 border-b border-border-light bg-bg-tertiary/80 flex items-center gap-3">
+            <span
+              className="w-1 h-8 rounded-full bg-accent-primary shrink-0"
+              aria-hidden
+            />
+            <h3 className="text-lg font-bold text-text-primary">{title}</h3>
           </div>
         )}
         <div className={paddings[padding]}>{children}</div>

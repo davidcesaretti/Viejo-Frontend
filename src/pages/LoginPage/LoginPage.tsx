@@ -40,14 +40,14 @@ export function LoginPage() {
   });
 
   return (
-    <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen min-h-[100dvh] bg-bg-primary flex items-center justify-center px-3 py-6 sm:px-4 sm:py-8 pb-safe">
       <Card
         variant="elevated"
         padding="lg"
-        className="w-full max-w-md animate-scale-in"
+        className="w-full max-w-md animate-scale-in mx-auto"
       >
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-text-primary mb-2">
+        <div className="mb-4 text-center sm:mb-6">
+          <h1 className="text-xl font-bold text-text-primary mb-1 sm:text-2xl sm:mb-2">
             Iniciar sesión
           </h1>
           <p className="text-text-secondary text-sm">
@@ -94,7 +94,11 @@ export function LoginPage() {
                 </p>
               </div>
             )}
-            <Button type="submit" className="w-full" size="lg">
+            <Button
+              type="submit"
+              className="w-full min-h-[48px] sm:min-h-0"
+              size="lg"
+            >
               Entrar
             </Button>
           </form>

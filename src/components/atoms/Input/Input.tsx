@@ -8,7 +8,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const baseStyles =
-  "w-full px-4 py-2.5 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-bg-secondary text-text-primary placeholder:text-text-tertiary";
+  "w-full min-h-[44px] px-4 py-2.5 rounded-xl border-2 border-border-light transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed bg-bg-secondary text-text-primary placeholder:text-text-tertiary text-base";
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -19,8 +19,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       idProp ??
       (label ? `input-${label.toLowerCase().replace(/\s+/g, "-")}` : undefined);
     const errorStyles = hasError
-      ? "border-accent-error focus:border-accent-error focus:ring-accent-error/20"
-      : "border-border-light focus:border-accent-primary focus:ring-accent-primary/20";
+      ? "border-accent-error focus:border-accent-error focus:ring-accent-error/30"
+      : "focus:border-accent-primary focus:ring-accent-primary/40 focus:shadow-[0_0_0_3px_rgba(79,70,229,0.15)]";
 
     return (
       <div className="w-full">

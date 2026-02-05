@@ -3,10 +3,10 @@ import {
   type InputHTMLAttributes,
   type SelectHTMLAttributes,
 } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, Controller } from "react-hook-form";
 import { Input } from "../../atoms/Input";
 import { Label } from "../../atoms/Label";
-import { Select, type SelectOption } from "../../atoms/Select";
+import { CustomSelect, type SelectOption } from "../../atoms/CustomSelect";
 
 type FormFieldType = "input" | "select";
 
@@ -47,24 +47,39 @@ export function FormField(props: FormFieldProps) {
   const {
     formState: { errors },
     register,
+    control,
+    trigger,
   } = useFormContext();
   const { name, label, required = false } = props;
   const error = errors[name]?.message as string | undefined;
 
   if (props.type === "select") {
-    const { options, placeholder, ...selectProps } = props;
+    const { options, placeholder, disabled, ...selectProps } = props;
     return (
       <div className="space-y-1">
         <Label htmlFor={name} required={required}>
           {label}
         </Label>
-        <Select
-          id={name}
-          options={options}
-          placeholder={placeholder}
-          hasError={!!error}
-          {...register(name)}
-          {...selectProps}
+        <Controller
+          name={name}
+          control={control}
+          render={({ field }) => (
+            <CustomSelect
+              id={name}
+              options={options}
+              placeholder={placeholder}
+              hasError={!!error}
+              value={field.value ?? ""}
+              onChange={(value) => {
+                field.onChange(value);
+                trigger(name);
+              }}
+              onBlur={field.onBlur}
+              disabled={disabled}
+              aria-invalid={!!error}
+              {...selectProps}
+            />
+          )}
         />
         {error && <p className="text-sm text-accent-error">{error}</p>}
       </div>

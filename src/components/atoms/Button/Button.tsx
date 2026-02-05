@@ -17,27 +17,27 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const baseStyles =
-  "inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg-primary disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
+  "inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg-primary disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]";
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent-primary text-text-primary hover:opacity-90 focus:ring-accent-primary shadow-md",
+    "bg-accent-primary text-white hover:brightness-110 focus:ring-accent-primary shadow-lg hover:shadow-xl hover:-translate-y-0.5",
   secondary:
-    "bg-accent-secondary text-text-primary hover:opacity-90 focus:ring-accent-secondary shadow-md",
+    "bg-accent-secondary-bg text-accent-secondary border-2 border-accent-secondary/40 hover:bg-accent-secondary hover:text-white focus:ring-accent-secondary shadow-md hover:shadow-lg hover:-translate-y-0.5",
   success:
-    "bg-accent-success text-text-primary hover:opacity-90 focus:ring-accent-success shadow-md",
+    "bg-accent-success text-white hover:brightness-110 focus:ring-accent-success shadow-md hover:shadow-lg",
   warning:
-    "bg-accent-warning text-text-primary hover:opacity-90 focus:ring-accent-warning shadow-md",
+    "bg-accent-warning text-white hover:brightness-110 focus:ring-accent-warning shadow-md hover:shadow-lg",
   error:
-    "bg-accent-error text-text-primary hover:opacity-90 focus:ring-accent-error shadow-md",
+    "bg-accent-error text-white hover:brightness-110 focus:ring-accent-error shadow-md hover:shadow-lg",
   ghost:
-    "bg-transparent text-text-secondary hover:bg-bg-tertiary border border-border-light focus:ring-border-medium",
+    "bg-bg-tertiary/60 text-text-primary border-2 border-border-medium hover:bg-bg-tertiary hover:border-accent-primary/50 focus:ring-accent-primary/30",
 };
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "px-3 py-1.5 text-sm rounded-md",
-  md: "px-4 py-2 text-base rounded-lg",
-  lg: "px-6 py-3 text-lg rounded-xl",
+  sm: "px-3 py-2 text-sm rounded-lg min-h-[44px] sm:min-h-0",
+  md: "px-5 py-2.5 text-base rounded-xl min-h-[44px] sm:min-h-0",
+  lg: "px-6 py-3 text-lg rounded-xl min-h-[48px] sm:min-h-0",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

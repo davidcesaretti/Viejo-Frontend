@@ -39,3 +39,15 @@ export async function logout(): Promise<void> {
     // Si no existe el endpoint o falla, igual limpiamos el estado en el cliente
   }
 }
+
+/**
+ * Obtiene un token de corta duración solo para el handshake de Socket.IO.
+ * Usar con credentials: 'include' (apiRequest ya lo envía).
+ * No guardar este token; es de un solo uso / vida muy corta.
+ * En cada conexión o reconexión del socket, volver a llamar a este endpoint.
+ */
+export async function getSocketToken(): Promise<{ token: string }> {
+  return apiRequest<{ token: string }>(`${AUTH_PREFIX}/socket-token`, {
+    method: "GET",
+  });
+}
