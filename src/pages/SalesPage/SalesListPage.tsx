@@ -251,7 +251,15 @@ export function SalesListPage() {
                               : <span className="font-semibold text-accent-error">{formatCurrency(balance)}</span>}
                           </td>
                           <td className="text-right">
-                            <Button variant="ghost" size="sm" onClick={() => navigate(`/ventas/${s.id}`)}>Ver detalle</Button>
+                            <div className="ds-table-actions">
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => navigate(`/ventas/${s.id}`)}
+                              >
+                                Ver detalle
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       );

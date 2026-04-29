@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts";
-import { ProtectedRoute, GuestOnlyRoute } from "@/guards";
+import { ProtectedRoute, GuestOnlyRoute, RequireRole } from "@/guards";
 import { ToastContainer } from "@/components/molecules/ToastContainer";
 import {
-  HomePage,
   LoginPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
   ProductsListPage,
   ProductFormPage,
   StockListPage,
@@ -15,6 +16,10 @@ import {
   SalesListPage,
   CreateSalePage,
   SaleDetailPage,
+  UsersListPage,
+  UserFormPage,
+  CashboxPage,
+  ProfilePage,
 } from "@/pages";
 
 function App() {
@@ -32,10 +37,26 @@ function App() {
             }
           />
           <Route
+            path="/forgot-password"
+            element={
+              <GuestOnlyRoute>
+                <ForgotPasswordPage />
+              </GuestOnlyRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <GuestOnlyRoute>
+                <ResetPasswordPage />
+              </GuestOnlyRoute>
+            }
+          />
+          <Route
             path="/"
             element={
               <ProtectedRoute>
-                <HomePage />
+                <Navigate to="/caja" replace />
               </ProtectedRoute>
             }
           />
@@ -143,7 +164,53 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* Rutas por rol: envolver con <RequireRole allowedRoles={["admin"]} fallbackTo="/"> cuando agregues páginas */}
+          <Route
+            path="/caja"
+            element={
+              <ProtectedRoute>
+                <CashboxPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          {/* Gestión de usuarios — solo administradores */}
+          <Route
+            path="/usuarios"
+            element={
+              <ProtectedRoute>
+                <RequireRole allowedRoles={["administrador"]}>
+                  <UsersListPage />
+                </RequireRole>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/usuarios/nuevo"
+            element={
+              <ProtectedRoute>
+                <RequireRole allowedRoles={["administrador"]}>
+                  <UserFormPage />
+                </RequireRole>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/usuarios/:id/editar"
+            element={
+              <ProtectedRoute>
+                <RequireRole allowedRoles={["administrador"]}>
+                  <UserFormPage />
+                </RequireRole>
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

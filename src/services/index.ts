@@ -1,5 +1,12 @@
 export * from "./api";
-export { login, getCurrentUser, logout } from "./auth.service";
+export {
+  login,
+  getCurrentUser,
+  logout,
+  changePassword,
+  forgotPassword,
+  resetPassword,
+} from "./auth.service";
 export {
   getNotifications,
   markNotificationAsRead,
@@ -31,6 +38,15 @@ export {
 } from "./clients.service";
 export { getSales, getSalesForExport, getSalesByClient, getSale, createSale } from "./sales.service";
 export {
+  getUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  banUser,
+  unbanUser,
+  deleteUser,
+} from "./users.service";
+export {
   getPaymentsByClient,
   getPaymentsBySale,
   getPayment,
@@ -38,3 +54,9 @@ export {
   addSalePayment,
   deleteSalePayment,
 } from "./payments.service";
+export {
+  getCashboxEntries,
+  getCashboxSummary,
+  createCashboxEntry,
+  deleteCashboxEntry,
+} from "./cashbox.service";

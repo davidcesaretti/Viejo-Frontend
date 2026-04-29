@@ -32,3 +32,15 @@ export type {
   SaleCreateItemBody,
 } from "./sale";
 export type { Payment, PaymentCreateBody } from "./payment";
+export type {
+  PlatformUser,
+  PlatformRole,
+  CreateUserBody,
+  UpdateUserBody,
+} from "./user";
+export type {
+  CashboxEntry,
+  CashboxEntryType,
+  CashboxSummary,
+  CreateCashboxEntryBody,
+} from "./cashbox";

@@ -29,7 +29,7 @@ function calcSubtotal(quantity: number, unitPrice: number, discountPercent: numb
 const saleItemSchema = z.object({
   stockId: z.string().min(1, "Seleccioná un cargamento"),
   quantity: z.coerce.number().min(0.01, "Cantidad mayor a 0"),
-  unitPrice: z.coerce.number().min(0, "Precio mayor o igual a 0"),
+  unitPrice: z.coerce.number().min(0.01, "Precio de venta mayor a 0"),
   discountPercent: z.coerce.number().min(0).max(100),
   amountPaid: z.coerce.number().min(0).default(0),
 });
@@ -104,22 +104,9 @@ export function CreateSalePage() {
     const variantLabel = s.variantName ? ` · ${s.variantName}` : "";
     return {
       value: s.id,
-      label: `${productLabel}${variantLabel} — ${formatCurrency(s.price)} (stock: ${s.quantity})`,
+      label: `${productLabel}${variantLabel} — costo ref: ${formatCurrency(s.price)} (stock: ${s.quantity})`,
     };
   });
-
-  const stockIds = items?.map((i) => i.stockId).join(",") ?? "";
-  useEffect(() => {
-    if (!stockList.length) return;
-    items?.forEach((it, index) => {
-      if (it.stockId) {
-        const stock = stockList.find((s) => s.id === it.stockId);
-        if (stock && Number(it.unitPrice) === 0) {
-          methods.setValue(`items.${index}.unitPrice`, stock.price);
-        }
-      }
-    });
-  }, [stockIds, stockList.length]);
 
   const onSubmit = methods.handleSubmit(async (data) => {
     const stockMap = new Map(stockList.map((s) => [s.id, s]));
@@ -187,7 +174,7 @@ export function CreateSalePage() {
 
   return (
     <MainLayout title="Nueva venta">
-      <div className="ds-page max-w-4xl">
+      <div className="ds-page">
         <div>
           <button
             type="button"
@@ -199,11 +186,13 @@ export function CreateSalePage() {
             </svg>
             Ventas
           </button>
-          <h1 className="ds-section-title">Nueva venta</h1>
         </div>
 
-        <FormProvider {...methods}>
-          <form onSubmit={onSubmit} className="space-y-5">
+        <div className="mx-auto w-full max-w-4xl">
+          <h1 className="ds-section-title">Nueva venta</h1>
+
+          <FormProvider {...methods}>
+            <form onSubmit={onSubmit} className="mt-4 space-y-5">
             {/* Info general */}
             <div className="rounded-xl border border-border-light bg-bg-secondary p-6 shadow-sm">
               <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
@@ -335,7 +324,7 @@ export function CreateSalePage() {
                           label="Precio unit."
                           required
                           inputType="number"
-                          placeholder="0"
+                          placeholder="Ingresar precio de venta"
                         />
                         <FormField
                           name={`items.${index}.discountPercent`}
@@ -480,8 +469,9 @@ export function CreateSalePage() {
                 Crear venta
               </Button>
             </div>
-          </form>
-        </FormProvider>
+            </form>
+          </FormProvider>
+        </div>
       </div>
     </MainLayout>
   );

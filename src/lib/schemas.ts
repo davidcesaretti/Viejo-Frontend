@@ -58,3 +58,72 @@ export const paymentFormSchema = z.object({
 });
 
 export type PaymentFormValues = z.infer<typeof paymentFormSchema>;
+
+// ─── Users ────────────────────────────────────────────────────
+export const PLATFORM_ROLES = ["administrador", "vendedor"] as const;
+
+export const userFormSchema = z
+  .object({
+    name: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(100),
+    email: z
+      .string()
+      .min(1, "El email es requerido")
+      .email("Ingresá un email válido"),
+    role: z.enum(PLATFORM_ROLES, { required_error: "Seleccioná un rol" }),
+    password: z
+      .string()
+      .min(6, "La contraseña debe tener al menos 6 caracteres")
+      .or(z.literal(""))
+      .optional(),
+    confirmPassword: z.string().optional().or(z.literal("")),
+  })
+  .refine(
+    (data) => {
+      if (data.password && data.password.length > 0) {
+        return data.password === data.confirmPassword;
+      }
+      return true;
+    },
+    { message: "Las contraseñas no coinciden", path: ["confirmPassword"] }
+  );
+
+export type UserFormValues = z.infer<typeof userFormSchema>;
+
+// ─── Password / Profile ───────────────────────────────────────
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(6, "Ingresá tu contraseña actual"),
+    newPassword: z
+      .string()
+      .min(6, "La nueva contraseña debe tener al menos 6 caracteres"),
+    confirmNewPassword: z.string().min(6, "Confirmá la nueva contraseña"),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirmNewPassword"],
+  });
+
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, "El email es requerido")
+    .email("Ingresá un email válido"),
+});
+
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(6, "La nueva contraseña debe tener al menos 6 caracteres"),
+    confirmNewPassword: z.string().min(6, "Confirmá la nueva contraseña"),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirmNewPassword"],
+  });
+
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;

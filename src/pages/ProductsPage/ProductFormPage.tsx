@@ -77,7 +77,7 @@ export function ProductFormPage() {
 
   return (
     <MainLayout title={pageTitle}>
-      <div className="ds-page max-w-lg">
+      <div className="ds-page">
         <div>
           <button
             type="button"
@@ -89,10 +89,12 @@ export function ProductFormPage() {
             </svg>
             Productos
           </button>
-          <h1 className="ds-section-title">{pageTitle}</h1>
         </div>
 
-        <div className="rounded-xl border border-border-light bg-bg-secondary p-6 shadow-sm">
+        <div className="mx-auto w-full max-w-lg">
+          <h1 className="ds-section-title">{pageTitle}</h1>
+
+          <div className="mt-4 rounded-xl border border-border-light bg-bg-secondary p-6 shadow-sm">
           {loadingData ? (
             <div className="flex items-center justify-center py-8 text-sm text-text-tertiary">
               Cargando…
@@ -181,6 +183,7 @@ export function ProductFormPage() {
               </form>
             </FormProvider>
           )}
+          </div>
         </div>
       </div>
     </MainLayout>

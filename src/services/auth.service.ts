@@ -1,5 +1,12 @@
 import { apiRequest } from "./api/client";
-import type { AuthLoginBody, AuthLoginResponse, User } from "@/types/auth";
+import type {
+  AuthLoginBody,
+  AuthLoginResponse,
+  User,
+  ChangePasswordBody,
+  ForgotPasswordBody,
+  ResetPasswordBody,
+} from "@/types/auth";
 
 const AUTH_PREFIX = "/auth";
 
@@ -49,5 +56,26 @@ export async function logout(): Promise<void> {
 export async function getSocketToken(): Promise<{ token: string }> {
   return apiRequest<{ token: string }>(`${AUTH_PREFIX}/socket-token`, {
     method: "GET",
+  });
+}
+
+export async function changePassword(body: ChangePasswordBody): Promise<void> {
+  await apiRequest(`${AUTH_PREFIX}/change-password`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function forgotPassword(body: ForgotPasswordBody): Promise<void> {
+  await apiRequest(`${AUTH_PREFIX}/forgot-password`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function resetPassword(body: ResetPasswordBody): Promise<void> {
+  await apiRequest(`${AUTH_PREFIX}/reset-password`, {
+    method: "POST",
+    body: JSON.stringify(body),
   });
 }
