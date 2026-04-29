@@ -1,10 +1,17 @@
 import { type ReactNode, useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "../../atoms/Button";
-import { ThemeToggle } from "../../atoms/ThemeToggle";
+import { useNavigate, NavLink } from "react-router-dom";
 import { NotificationsDropdown } from "../../molecules/NotificationsDropdown";
 import { useAuth } from "@/contexts";
 import { useNotifications } from "@/hooks/useNotifications";
+import { cn } from "@/lib/utils";
+
+const navLinks = [
+  { to: "/",          label: "Inicio",    end: true },
+  { to: "/productos", label: "Productos", end: false },
+  { to: "/stock",     label: "Stock",     end: false },
+  { to: "/clientes",  label: "Clientes",  end: false },
+  { to: "/ventas",    label: "Ventas",    end: false },
+];
 
 export interface MainLayoutProps {
   children: ReactNode;
@@ -14,25 +21,26 @@ export interface MainLayoutProps {
 export function MainLayout({ children, title }: MainLayoutProps) {
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
-  const { notifications, unreadCount, loading, error, markAsRead } =
-    useNotifications();
+  const { notifications, unreadCount, loading, error, markAsRead } = useNotifications();
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    document.title = title ? `${title} — Gestión` : "Gestión de Ventas";
+  }, [title]);
+
+  useEffect(() => {
+    if (!showNotifications) return;
+    const handler = (e: MouseEvent) => {
       if (
         notificationsRef.current &&
-        !notificationsRef.current.contains(event.target as Node)
+        !notificationsRef.current.contains(e.target as Node)
       ) {
         setShowNotifications(false);
       }
     };
-    if (showNotifications) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [showNotifications]);
 
   const handleLogout = async () => {
@@ -41,70 +49,69 @@ export function MainLayout({ children, title }: MainLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-bg-primary min-h-[100dvh]">
-      <header className="sticky top-0 z-10 border-b-2 border-border-light bg-bg-secondary shadow-[var(--shadow-md)] pt-safe">
-        <div className="mx-auto flex min-h-14 max-w-7xl flex-wrap items-center justify-between gap-2 px-3 py-2 sm:flex-nowrap sm:px-6 sm:py-0 sm:h-14 lg:px-8">
-          <h1 className="min-w-0 flex-1 truncate text-base font-bold text-text-primary sm:flex-none sm:max-w-none sm:text-xl tracking-tight">
-            {title ?? "Gestión de Ventas"}
-          </h1>
-          <nav className="flex flex-shrink-0 items-center gap-1 sm:gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/")}
-              className="min-h-[44px] min-w-[44px] sm:min-w-0 sm:min-h-0"
-            >
-              Inicio
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/productos")}
-              className="min-h-[44px] min-w-[44px] sm:min-w-0 sm:min-h-0"
-            >
-              Productos
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/stock")}
-              className="min-h-[44px] min-w-[44px] sm:min-w-0 sm:min-h-0"
-            >
-              Stock
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/clientes")}
-              className="min-h-[44px] min-w-[44px] sm:min-w-0 sm:min-h-0"
-            >
-              Clientes
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/ventas")}
-              className="min-h-[44px] min-w-[44px] sm:min-w-0 sm:min-h-0"
-            >
-              Ventas
-            </Button>
-            <ThemeToggle />
+    <div className="min-h-dvh bg-bg-primary">
+      {/* ── Top bar ─────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-20 h-14 border-b border-border-light bg-bg-secondary pt-safe">
+        <div className="mx-auto flex h-full max-w-7xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
+
+          {/* Brand */}
+          <div className="flex shrink-0 items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-primary">
+              <svg
+                className="h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                />
+              </svg>
+            </div>
+            <span className="text-sm font-bold tracking-tight text-text-primary">
+              Gestión
+            </span>
+          </div>
+
+          <div className="h-5 w-px shrink-0 bg-border-light" />
+
+          {/* Nav links */}
+          <nav className="flex flex-1 items-center gap-0.5 overflow-x-auto">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) =>
+                  cn(
+                    "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-accent-primary/10 text-accent-primary"
+                      : "text-text-secondary hover:bg-bg-tertiary hover:text-text-primary"
+                  )
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Right side */}
+          <div className="flex shrink-0 items-center gap-1">
             {isAuthenticated && (
               <div className="relative" ref={notificationsRef}>
                 <button
                   type="button"
                   onClick={() => setShowNotifications((v) => !v)}
-                  className="relative flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-text-secondary transition-colors hover:text-text-primary hover:bg-bg-tertiary sm:min-h-0 sm:min-w-0"
-                  aria-label={
-                    showNotifications
-                      ? "Cerrar notificaciones"
-                      : "Ver notificaciones"
-                  }
-                  title="Notificaciones"
+                  className="relative flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+                  aria-label={showNotifications ? "Cerrar notificaciones" : "Ver notificaciones"}
                 >
-                  {/* Icono campanita */}
                   <svg
-                    className="h-5 w-5 sm:h-6 sm:w-6"
+                    className="h-[18px] w-[18px]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -113,12 +120,12 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={2}
+                      strokeWidth={1.75}
                       d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
                     />
                   </svg>
                   {unreadCount > 0 && (
-                    <span className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent-error px-1 text-[10px] font-bold text-white sm:right-1 sm:top-1">
+                    <span className="absolute right-1.5 top-1.5 flex h-[14px] min-w-[14px] items-center justify-center rounded-full bg-accent-error px-0.5 text-[9px] font-bold text-white">
                       {unreadCount > 99 ? "99+" : unreadCount}
                     </span>
                   )}
@@ -134,25 +141,28 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                 )}
               </div>
             )}
+
             {isAuthenticated && user && (
               <>
-                <span className="hidden max-w-[120px] truncate text-sm text-text-secondary sm:inline lg:max-w-none">
+                <div className="mx-1 h-5 w-px bg-border-light" />
+                <span className="hidden max-w-[110px] truncate text-xs text-text-secondary sm:inline">
                   {user.name}
                 </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={handleLogout}
-                  className="min-h-[44px] min-w-[44px] sm:min-w-0 sm:min-h-0"
+                  className="h-9 rounded-lg px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 >
                   Salir
-                </Button>
+                </button>
               </>
             )}
-          </nav>
+          </div>
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8 pb-safe">
+
+      {/* ── Page content ────────────────────────────────────────── */}
+      <main className="mx-auto max-w-7xl px-4 py-6 pb-safe sm:px-6 sm:py-8">
         {children}
       </main>
     </div>

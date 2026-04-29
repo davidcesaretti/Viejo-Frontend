@@ -8,7 +8,7 @@ Proyecto React con **Atomic Design**, pensado para la gestión de ventas de un n
 - **Tailwind CSS v4** para estilos
 - **Zod** + **React Hook Form** + **@hookform/resolvers** para formularios y validación
 - **React Router** para rutas y páginas
-- **Modo claro / oscuro** con persistencia en `localStorage` y tokens de color semánticos
+- **Tema claro** con tokens de color semánticos
 - **Auth**: login, guards por ruta y por rol (`admin` / `vendedor`), cookie httpOnly para peticiones autenticadas
 
 ## Autenticación y permisos
@@ -24,15 +24,9 @@ Proyecto React con **Atomic Design**, pensado para la gestión de ventas de un n
 
 Configurar la URL de la API en `.env`: `VITE_API_URL=http://localhost:3000` (ver `.env.example`).
 
-## Modo claro y modo oscuro
+## Tema visual
 
-El tema se controla con la clase `.dark` en `<html>` y se persiste en `localStorage` (clave `app-theme`). Si el usuario no eligió tema, se usa la preferencia del sistema (`prefers-color-scheme`).
-
-- **`ThemeProvider`** (en `main.tsx`): aplica el tema al documento y sincroniza con `localStorage`.
-- **`useTheme()`**: devuelve `{ theme, setTheme, toggleTheme, isDark }`.
-- **`ThemeToggle`**: botón átomo (sol/luna) para alternar; está en el header del `MainLayout`.
-
-Los estilos usan **tokens semánticos** definidos en `src/index.css` (`@theme` y `@theme dark:`), así todos los componentes se adaptan al tema sin duplicar clases:
+Los estilos usan **tokens semánticos** definidos en `src/index.css` (`@theme`) para mantener consistencia visual sin duplicar clases:
 
 | Token                                     | Uso               |
 | ----------------------------------------- | ----------------- |
@@ -53,13 +47,13 @@ src/
 │   │   ├── Input/
 │   │   ├── Label/
 │   │   ├── Select/
-│   │   └── ThemeToggle/
+│   │   └── Skeleton/
 │   ├── molecules/      # Combinación de átomos (formularios, cards, etc.)
 │   │   ├── Card/
 │   │   └── FormField/
 │   └── templates/      # Layouts que combinan átomos y moléculas
 │       └── MainLayout/
-├── contexts/           # React Context (ThemeProvider, AuthProvider, useAuth)
+├── contexts/           # React Context (AuthProvider, useAuth)
 ├── guards/             # ProtectedRoute, GuestOnlyRoute, RequireRole
 ├── pages/              # Páginas que renderizan un template + contenido
 │   ├── HomePage/

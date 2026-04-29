@@ -29,10 +29,12 @@ export {
   updateClient,
   deleteClient,
 } from "./clients.service";
-export { getSalesByClient, getSale, createSale } from "./sales.service";
+export { getSales, getSalesForExport, getSalesByClient, getSale, createSale } from "./sales.service";
 export {
   getPaymentsByClient,
   getPaymentsBySale,
   getPayment,
   createPayment,
+  addSalePayment,
+  deleteSalePayment,
 } from "./payments.service";

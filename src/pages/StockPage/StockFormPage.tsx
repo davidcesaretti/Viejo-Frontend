@@ -3,19 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useForm, FormProvider, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MainLayout } from "@/components/templates/MainLayout";
-import { PageTransition } from "@/components/templates/PageTransition";
-import { Card } from "@/components/molecules/Card";
 import { Button } from "@/components/atoms/Button";
 import { FormField } from "@/components/molecules/FormField";
 import { useToast } from "@/hooks/useToast";
 import { stockFormSchema, type StockFormValues } from "@/lib/schemas";
-import {
-  getProducts,
-  getStockItem,
-  createStock,
-  updateStock,
-} from "@/services";
+import { getProducts, getStockItem, createStock, updateStock } from "@/services";
 import { ApiClientError } from "@/services/api/client";
+import type { Product } from "@/types/product";
 
 export function StockFormPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,14 +18,13 @@ export function StockFormPage() {
   const isEdit = Boolean(id);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
-  const [productOptions, setProductOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   const methods = useForm<StockFormValues>({
     resolver: zodResolver(stockFormSchema) as Resolver<StockFormValues>,
     defaultValues: {
       productId: "",
+      variantName: "",
       quantity: 0,
       price: 0,
       discountType: "percentage",
@@ -40,19 +33,31 @@ export function StockFormPage() {
     mode: "onBlur",
   });
 
-  const discountType = methods.watch("discountType");
+  const selectedProductId = methods.watch("productId");
+
+  const productOptions = products.map((p) => ({ value: p.id, label: p.name }));
+
+  const selectedProduct = products.find((p) => p.id === selectedProductId);
+  const variantOptions = selectedProduct?.variants?.length
+    ? [
+        { value: "", label: "Sin variante" },
+        ...selectedProduct.variants.map((v) => ({ value: v, label: v })),
+      ]
+    : [];
 
   useEffect(() => {
     getProducts(1, 500)
-      .then((res) => {
-        const list = res.items ?? [];
-        setProductOptions(list.map((p) => ({ value: p.id, label: p.name })));
-      })
-      .catch(() => setProductOptions([]))
-      .finally(() => {
-        if (!id) setLoadingData(false);
-      });
+      .then((res) => setProducts(res.items ?? []))
+      .catch(() => setProducts([]))
+      .finally(() => { if (!id) setLoadingData(false); });
   }, [id]);
+
+  // Reset variantName when product changes (only in create mode)
+  useEffect(() => {
+    if (!isEdit) {
+      methods.setValue("variantName", "");
+    }
+  }, [selectedProductId, isEdit]);
 
   useEffect(() => {
     if (!id) return;
@@ -60,6 +65,7 @@ export function StockFormPage() {
       .then((s) => {
         methods.reset({
           productId: s.productId,
+          variantName: s.variantName ?? "",
           quantity: s.quantity,
           price: s.price,
           discountType: s.discountType ?? "percentage",
@@ -67,72 +73,57 @@ export function StockFormPage() {
         });
       })
       .catch((err) => {
-        toast.error(
-          "Error al cargar cargamento",
-          err instanceof Error ? err.message : undefined
-        );
+        toast.error("Error al cargar cargamento", err instanceof Error ? err.message : undefined);
         navigate("/stock", { replace: true });
       })
       .finally(() => setLoadingData(false));
-  }, [id, methods, navigate, toast]);
+  }, [id]);
 
   const onSubmit = methods.handleSubmit(async (data) => {
     setLoading(true);
     try {
-      const body = {
-        productId: data.productId,
-        quantity: data.quantity,
-        price: data.price,
-        ...(data.discount != null
-          ? {
-              discountType: data.discountType ?? "percentage",
-              discount: data.discount,
-            }
-          : {}),
-      };
+      const variantPart = data.variantName ? { variantName: data.variantName } : {};
+
       if (isEdit && id) {
-        await updateStock(id, {
-          quantity: data.quantity,
-          price: data.price,
-          ...(data.discount != null
-            ? {
-                discountType: data.discountType ?? "percentage",
-                discount: data.discount,
-              }
-            : {}),
-        });
+        await updateStock(id, { quantity: data.quantity, price: data.price, ...variantPart });
         toast.success("Cargamento actualizado");
       } else {
-        await createStock(body);
+        await createStock({ productId: data.productId, quantity: data.quantity, price: data.price, ...variantPart });
         toast.success("Cargamento creado");
       }
       navigate("/stock", { replace: true });
     } catch (err) {
-      const msg =
-        err instanceof ApiClientError ? err.message : "Error al guardar";
-      toast.error("No se pudo guardar", msg);
+      toast.error("No se pudo guardar", err instanceof ApiClientError ? err.message : "Error al guardar");
     } finally {
       setLoading(false);
     }
   });
 
-  if (loadingData) {
-    return (
-      <MainLayout title={isEdit ? "Editar cargamento" : "Nuevo cargamento"}>
-        <PageTransition>
-          <p className="text-sm text-text-tertiary">Cargando…</p>
-        </PageTransition>
-      </MainLayout>
-    );
-  }
+  const pageTitle = isEdit ? "Editar cargamento" : "Nuevo cargamento";
 
   return (
-    <MainLayout title={isEdit ? "Editar cargamento" : "Nuevo cargamento"}>
-      <PageTransition>
-        <div className="space-y-6 animate-fade-in pb-6 sm:pb-8 max-w-xl">
-          <Card variant="elevated" padding="lg">
+    <MainLayout title={pageTitle}>
+      <div className="ds-page max-w-lg">
+        <div>
+          <button
+            type="button"
+            onClick={() => navigate("/stock")}
+            className="mb-3 flex items-center gap-1.5 text-sm text-text-secondary transition-colors hover:text-text-primary"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Stock
+          </button>
+          <h1 className="ds-section-title">{pageTitle}</h1>
+        </div>
+
+        <div className="rounded-xl border border-border-light bg-bg-secondary p-6 shadow-sm">
+          {loadingData ? (
+            <div className="flex items-center justify-center py-8 text-sm text-text-tertiary">Cargando…</div>
+          ) : (
             <FormProvider {...methods}>
-              <form onSubmit={onSubmit} className="space-y-4">
+              <form onSubmit={onSubmit} className="ds-form">
                 <FormField
                   name="productId"
                   label="Producto"
@@ -142,67 +133,34 @@ export function StockFormPage() {
                   required
                   disabled={isEdit}
                 />
-                <FormField
-                  name="quantity"
-                  label="Cantidad"
-                  required
-                  inputType="number"
-                  placeholder="0"
-                />
-                <FormField
-                  name="price"
-                  label="Precio"
-                  required
-                  inputType="number"
-                  placeholder="0"
-                />
-                <FormField
-                  name="discountType"
-                  label="Tipo de descuento"
-                  type="select"
-                  options={[
-                    { value: "percentage", label: "Porcentaje (%)" },
-                    { value: "fixed", label: "Monto fijo" },
-                  ]}
-                />
-                <FormField
-                  name="discount"
-                  label={
-                    discountType === "percentage"
-                      ? "Descuento (%)"
-                      : "Descuento (monto fijo)"
-                  }
-                  inputType="number"
-                  placeholder={
-                    discountType === "percentage"
-                      ? "Opcional, 0-100"
-                      : "Opcional"
-                  }
-                />
-                <div className="flex gap-2 w-full">
-                  <Button
-                    type="submit"
-                    size="md"
-                    isLoading={loading}
-                    className="w-1/2 min-w-0"
-                  >
-                    {isEdit ? "Guardar cambios" : "Crear cargamento"}
+
+                {/* Variant selector — only visible when product has variants */}
+                {variantOptions.length > 0 && (
+                  <FormField
+                    name="variantName"
+                    label="Variante"
+                    type="select"
+                    options={variantOptions}
+                  />
+                )}
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField name="quantity" label="Cantidad" required inputType="number" placeholder="0" />
+                  <FormField name="price" label="Costo" required inputType="number" placeholder="0.00" />
+                </div>
+                <div className="ds-form-actions">
+                  <Button type="button" variant="secondary" size="sm" onClick={() => navigate("/stock")}>
+                    Cancelar
                   </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="md"
-                    onClick={() => navigate("/stock")}
-                    className="w-1/2 min-w-0"
-                  >
-                    Volver
+                  <Button type="submit" size="sm" isLoading={loading}>
+                    {isEdit ? "Guardar cambios" : "Crear cargamento"}
                   </Button>
                 </div>
               </form>
             </FormProvider>
-          </Card>
+          )}
         </div>
-      </PageTransition>
+      </div>
     </MainLayout>
   );
 }

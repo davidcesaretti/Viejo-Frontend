@@ -15,6 +15,8 @@ export interface Stock {
   discountType?: StockDiscountType;
   /** Valor: % (0-100) o monto según discountType. */
   discount?: number;
+  /** Variante asignada a este lote (ej. "Chica", "1L"). */
+  variantName?: string;
   /** Producto poblado por el backend (populate). */
   product?: Product;
 }
@@ -25,6 +27,7 @@ export interface StockCreateBody {
   price: number;
   discountType?: StockDiscountType;
   discount?: number;
+  variantName?: string;
 }
 
 export interface StockUpdateBody {
@@ -32,4 +35,5 @@ export interface StockUpdateBody {
   price?: number;
   discountType?: StockDiscountType;
   discount?: number;
+  variantName?: string;
 }

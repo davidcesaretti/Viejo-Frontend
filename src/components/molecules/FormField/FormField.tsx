@@ -28,8 +28,8 @@ interface InputFormFieldProps
     | "password"
     | "search"
     | "tel"
-    | "url";
-  /** Muestra el botón para alternar visibilidad de la contraseña (solo cuando inputType="password") */
+    | "url"
+    | "date";
   showPasswordToggle?: boolean;
 }
 
@@ -50,13 +50,15 @@ export function FormField(props: FormFieldProps) {
     control,
     trigger,
   } = useFormContext();
+
   const { name, label, required = false } = props;
   const error = errors[name]?.message as string | undefined;
 
+  /* ── Select ──────────────────────────────────────────────── */
   if (props.type === "select") {
-    const { options, placeholder, disabled, ...selectProps } = props;
+    const { options, placeholder, disabled } = props;
     return (
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         <Label htmlFor={name} required={required}>
           {label}
         </Label>
@@ -77,96 +79,89 @@ export function FormField(props: FormFieldProps) {
               onBlur={field.onBlur}
               disabled={disabled}
               aria-invalid={!!error}
-              {...selectProps}
             />
           )}
         />
-        {error && <p className="text-sm text-accent-error">{error}</p>}
+        {error && (
+          <p className="flex items-center gap-1 text-xs text-accent-error">
+            <svg className="h-3 w-3 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {error}
+          </p>
+        )}
       </div>
     );
   }
 
+  /* ── Input ───────────────────────────────────────────────── */
   const {
     inputType = "text",
-    label: _label,
-    type: _type,
     showPasswordToggle = false,
+    // Strip base props so they don't reach the native <input>
+    name: _n,
+    label: _l,
+    required: _r,
+    type: _t,
     ...inputProps
   } = props;
+
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = inputType === "password";
   const effectiveType =
     isPassword && showPasswordToggle && showPassword ? "text" : inputType;
 
-  const input = (
+  const inputEl = (
     <Input
       id={name}
       type={effectiveType}
       hasError={!!error}
-      className={isPassword && showPasswordToggle ? "pr-10" : undefined}
+      className={isPassword && showPasswordToggle ? "pr-9" : undefined}
       {...register(name)}
       {...inputProps}
     />
   );
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <Label htmlFor={name} required={required}>
         {label}
       </Label>
+
       {isPassword && showPasswordToggle ? (
         <div className="relative">
-          {input}
+          {inputEl}
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors p-1 rounded"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-text-tertiary transition-colors hover:text-text-primary"
             tabIndex={-1}
-            aria-label={
-              showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-            }
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
           >
             {showPassword ? (
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                />
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
               </svg>
             ) : (
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             )}
           </button>
         </div>
       ) : (
-        input
+        inputEl
       )}
-      {error && <p className="text-sm text-accent-error">{error}</p>}
+
+      {error && (
+        <p className="flex items-center gap-1 text-xs text-accent-error">
+          <svg className="h-3 w-3 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          {error}
+        </p>
+      )}
     </div>
   );
 }

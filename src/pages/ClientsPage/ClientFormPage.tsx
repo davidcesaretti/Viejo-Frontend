@@ -3,8 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MainLayout } from "@/components/templates/MainLayout";
-import { PageTransition } from "@/components/templates/PageTransition";
-import { Card } from "@/components/molecules/Card";
 import { Button } from "@/components/atoms/Button";
 import { FormField } from "@/components/molecules/FormField";
 import { useToast } from "@/hooks/useToast";
@@ -22,13 +20,7 @@ export function ClientFormPage() {
 
   const methods = useForm<ClientFormValues>({
     resolver: zodResolver(clientFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      notes: "",
-    },
+    defaultValues: { name: "", email: "", phone: "", address: "", notes: "" },
     mode: "onBlur",
   });
 
@@ -46,14 +38,11 @@ export function ClientFormPage() {
         })
       )
       .catch((err) => {
-        toast.error(
-          "Error al cargar cliente",
-          err instanceof Error ? err.message : undefined
-        );
+        toast.error("Error al cargar cliente", err instanceof Error ? err.message : undefined);
         navigate("/clientes", { replace: true });
       })
       .finally(() => setLoadingData(false));
-  }, [id, methods, navigate, toast]);
+  }, [id]);
 
   const onSubmit = methods.handleSubmit(async (data) => {
     setLoading(true);
@@ -74,80 +63,59 @@ export function ClientFormPage() {
       }
       navigate("/clientes", { replace: true });
     } catch (err) {
-      const msg =
-        err instanceof ApiClientError ? err.message : "Error al guardar";
-      toast.error("No se pudo guardar", msg);
+      toast.error("No se pudo guardar", err instanceof ApiClientError ? err.message : "Error al guardar");
     } finally {
       setLoading(false);
     }
   });
 
-  if (loadingData) {
-    return (
-      <MainLayout title={isEdit ? "Editar cliente" : "Nuevo cliente"}>
-        <PageTransition>
-          <p className="text-sm text-text-tertiary">Cargando…</p>
-        </PageTransition>
-      </MainLayout>
-    );
-  }
+  const pageTitle = isEdit ? "Editar cliente" : "Nuevo cliente";
 
   return (
-    <MainLayout title={isEdit ? "Editar cliente" : "Nuevo cliente"}>
-      <PageTransition>
-        <div className="space-y-6 animate-fade-in pb-6 sm:pb-8 max-w-xl">
-          <Card variant="elevated" padding="lg">
+    <MainLayout title={pageTitle}>
+      <div className="ds-page max-w-lg">
+        <div>
+          <button
+            type="button"
+            onClick={() => navigate("/clientes")}
+            className="mb-3 flex items-center gap-1.5 text-sm text-text-secondary transition-colors hover:text-text-primary"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Clientes
+          </button>
+          <h1 className="ds-section-title">{pageTitle}</h1>
+        </div>
+
+        <div className="rounded-xl border border-border-light bg-bg-secondary p-6 shadow-sm">
+          {loadingData ? (
+            <div className="flex items-center justify-center py-8 text-sm text-text-tertiary">Cargando…</div>
+          ) : (
             <FormProvider {...methods}>
-              <form onSubmit={onSubmit} className="space-y-4">
-                <FormField
-                  name="name"
-                  label="Nombre"
-                  required
-                  placeholder="Nombre completo"
-                />
-                <FormField
-                  name="email"
-                  label="Email"
-                  required
-                  inputType="email"
-                  placeholder="email@ejemplo.com"
-                />
-                <FormField
-                  name="phone"
-                  label="Teléfono"
-                  inputType="tel"
-                  placeholder="Opcional"
-                />
-                <FormField
-                  name="address"
-                  label="Dirección"
-                  placeholder="Opcional"
-                />
-                <FormField name="notes" label="Notas" placeholder="Opcional" />
-                <div className="flex gap-2 w-full">
-                  <Button
-                    type="submit"
-                    size="md"
-                    isLoading={loading}
-                    className="w-1/2 min-w-0"
-                  >
-                    {isEdit ? "Guardar cambios" : "Crear cliente"}
+              <form onSubmit={onSubmit} className="ds-form">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField name="name" label="Nombre" required placeholder="Nombre completo" />
+                  <FormField name="email" label="Email" required inputType="email" placeholder="email@ejemplo.com" />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField name="phone" label="Teléfono" inputType="tel" placeholder="Opcional" />
+                  <FormField name="address" label="Dirección" placeholder="Opcional" />
+                </div>
+                <FormField name="notes" label="Notas" placeholder="Información adicional (opcional)" />
+                <div className="ds-form-actions">
+                  <Button type="button" variant="secondary" size="sm" onClick={() => navigate("/clientes")}>
+                    Cancelar
                   </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="md"
-                    onClick={() => navigate("/clientes")}
-                    className="w-1/2 min-w-0"
-                  >
-                    Volver
+                  <Button type="submit" size="sm" isLoading={loading}>
+                    {isEdit ? "Guardar cambios" : "Crear cliente"}
                   </Button>
                 </div>
               </form>
             </FormProvider>
-          </Card>
+          )}
         </div>
-      </PageTransition>
+      </div>
     </MainLayout>
   );
 }

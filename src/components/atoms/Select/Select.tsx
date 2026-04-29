@@ -12,22 +12,22 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   hasError?: boolean;
 }
 
-const baseStyles =
-  "w-full px-4 py-2.5 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-bg-secondary text-text-primary";
+const base =
+  "w-full h-9 px-3 rounded-lg border bg-bg-secondary text-sm text-text-primary " +
+  "transition-colors cursor-pointer " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/25 focus-visible:border-accent-primary " +
+  "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-bg-tertiary";
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  (
-    { options, placeholder, hasError = false, className = "", ...props },
-    ref
-  ) => {
+  ({ options, placeholder, hasError = false, className = "", ...props }, ref) => {
     const errorStyles = hasError
-      ? "border-accent-error focus:border-accent-error focus:ring-accent-error/20"
-      : "border-border-light focus:border-accent-primary focus:ring-accent-primary/20";
+      ? "border-accent-error focus-visible:ring-accent-error/25 focus-visible:border-accent-error"
+      : "border-border-light";
 
     return (
       <select
         ref={ref}
-        className={cn(baseStyles, errorStyles, className)}
+        className={cn(base, errorStyles, className)}
         {...props}
       >
         {placeholder && (

@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts";
 import { FormField } from "@/components/molecules/FormField";
 import { Button } from "@/components/atoms/Button";
-import { Card } from "@/components/molecules/Card";
 import { loginFormSchema, type LoginFormValues } from "@/lib/schemas";
 import { ApiClientError } from "@/services/api/client";
 
@@ -16,8 +15,7 @@ export function LoginPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const from =
-    (location.state as { from?: { pathname: string } } | null)?.from
-      ?.pathname ?? "/";
+    (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? "/";
 
   const methods = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -31,58 +29,72 @@ export function LoginPage() {
       await login(data.email, data.password);
       navigate(from, { replace: true });
     } catch (err) {
-      if (err instanceof ApiClientError) {
-        setSubmitError(err.message || "Error al iniciar sesión");
-      } else {
-        setSubmitError("Error de conexión. Intentá de nuevo.");
-      }
+      setSubmitError(
+        err instanceof ApiClientError
+          ? err.message || "Error al iniciar sesión"
+          : "Error de conexión. Intentá de nuevo."
+      );
     }
   });
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-bg-primary flex items-center justify-center px-3 py-6 sm:px-4 sm:py-8 pb-safe">
-      <Card
-        variant="elevated"
-        padding="lg"
-        className="w-full max-w-md animate-scale-in mx-auto"
-      >
-        <div className="mb-4 text-center sm:mb-6">
-          <h1 className="text-xl font-bold text-text-primary mb-1 sm:text-2xl sm:mb-2">
-            Iniciar sesión
+    <div className="flex min-h-dvh items-center justify-center bg-bg-primary px-4 py-8 pb-safe">
+      <div className="w-full max-w-sm animate-scale-in">
+        {/* Brand */}
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent-primary shadow-sm">
+            <svg
+              className="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+              aria-hidden
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              />
+            </svg>
+          </div>
+          <h1 className="text-xl font-semibold text-text-primary">
+            Gestión de Ventas
           </h1>
-          <p className="text-text-secondary text-sm">
-            Gestión de Ventas — ingresá con tu cuenta
+          <p className="mt-1 text-sm text-text-secondary">
+            Ingresá con tu cuenta para continuar
           </p>
         </div>
-        <FormProvider {...methods}>
-          <form onSubmit={onSubmit} className="space-y-5">
-            <FormField
-              name="email"
-              label="Email"
-              required
-              inputType="email"
-              placeholder="ejemplo@mail.com"
-              autoComplete="email"
-            />
-            <FormField
-              name="password"
-              label="Contraseña"
-              required
-              inputType="password"
-              placeholder="Mínimo 6 caracteres"
-              autoComplete="current-password"
-              showPasswordToggle
-            />
-            {submitError && (
-              <div className="p-3 rounded-lg bg-accent-error/10 border border-accent-error/20">
-                <p
-                  className="text-sm text-accent-error flex items-center gap-2"
-                  role="alert"
-                >
+
+        {/* Card */}
+        <div className="rounded-xl border border-border-light bg-bg-secondary p-6 shadow-sm">
+          <FormProvider {...methods}>
+            <form onSubmit={onSubmit} className="ds-form">
+              <FormField
+                name="email"
+                label="Email"
+                required
+                inputType="email"
+                placeholder="tu@email.com"
+                autoComplete="email"
+              />
+              <FormField
+                name="password"
+                label="Contraseña"
+                required
+                inputType="password"
+                placeholder="Mínimo 6 caracteres"
+                autoComplete="current-password"
+                showPasswordToggle
+              />
+
+              {submitError && (
+                <div className="flex items-start gap-2.5 rounded-lg border border-accent-error/20 bg-accent-error/8 px-3.5 py-3">
                   <svg
-                    className="w-5 h-5 flex-shrink-0"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-accent-error"
                     fill="currentColor"
                     viewBox="0 0 20 20"
+                    aria-hidden
                   >
                     <path
                       fillRule="evenodd"
@@ -90,20 +102,24 @@ export function LoginPage() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  {submitError}
-                </p>
-              </div>
-            )}
-            <Button
-              type="submit"
-              className="w-full min-h-[48px] sm:min-h-0"
-              size="lg"
-            >
-              Entrar
-            </Button>
-          </form>
-        </FormProvider>
-      </Card>
+                  <p className="text-sm text-accent-error" role="alert">
+                    {submitError}
+                  </p>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full"
+                isLoading={methods.formState.isSubmitting}
+              >
+                Entrar
+              </Button>
+            </form>
+          </FormProvider>
+        </div>
+      </div>
     </div>
   );
 }
